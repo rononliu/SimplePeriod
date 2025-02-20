@@ -1,0 +1,262 @@
+.settings-container {
+  padding: 30rpx;
+  background: #fff5f0;
+  min-height: 100vh;
+}
+
+.settings-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 20rpx;
+  font-weight: 500;
+}
+
+.section-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 温度单位设置 */
+.unit-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20rpx;
+}
+
+.unit-switch text {
+  font-size: 32rpx;
+  color: #999;
+}
+
+.unit-switch text.active {
+  color: #ff9999;
+}
+
+/* 经期设置卡片 */
+.pink {
+  background: #fff0f0;
+}
+
+.pink-light {
+  background: #fff5f5;
+}
+
+.cycle-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+
+.cycle-item {
+  display: flex;
+  align-items: center;
+  gap: 30rpx;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #666;
+  min-width: 80rpx;
+}
+
+.unit {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.cycle-item input {
+  width: 120rpx;
+  height: 60rpx;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 10rpx;
+  padding: 0 10rpx;
+  font-size: 28rpx;
+  border: 1rpx solid #ffcccc;
+}
+
+.radio-label {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 40rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.radio-label radio {
+  transform: scale(0.8);
+  margin-right: 8rpx;
+}
+
+.default-days {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 经期天数 */
+.period-days {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.period-days input {
+  width: 120rpx;
+  height: 60rpx;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 10rpx;
+  padding: 0 10rpx;
+  font-size: 28rpx;
+  border: 1rpx solid #ffcccc;
+}
+
+/* 排卵日预测 */
+.purple {
+  background: #f5f0ff;
+}
+
+.prediction {
+  margin-left: 30rpx;
+  color: #9966ff;
+  font-size: 28rpx;
+}
+
+/* 记录选项 */
+.blue {
+  background: #f0f5ff;
+}
+
+.record-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+/* 提醒设置 */
+.blue-light {
+  background: #f5faff;
+}
+
+.reminder-time {
+  margin: 10rpx 0;
+  padding: 10rpx;
+  background: #ffffff;
+  border-radius: 10rpx;
+  text-align: center;
+}
+
+.reminder-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx;
+}
+
+/* 密码设置 */
+.password-display {
+  display: flex;
+  gap: 30rpx;
+  margin-top: 20rpx;
+  justify-content: center;
+}
+
+.password-mask {
+  width: 60rpx;
+  height: 60rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 48rpx;
+  color: #cccccc;
+}
+
+.password-mask.filled {
+  color: #333333;
+}
+
+.password-input-hidden {
+  height: 0;
+  width: 100%;
+  position: absolute;
+  left: -9999px;
+}
+
+/* 图标字体定义 */
+@font-face {
+  font-family: "icon-font";
+  src: url('data:font/truetype;charset=utf-8;base64,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');
+}
+
+/* 按钮样式 */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 30rpx;
+  margin-top: 60rpx;
+  padding: 0 40rpx;
+}
+
+.btn-save, .btn-reset {
+  width: 180rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  border: 2rpx solid #ffcccc;
+  background: #ffffff;
+  color: #999999;
+  transition: all 0.3s;
+  padding: 0;
+}
+
+.icon-font {
+  font-family: "icon-font";
+  font-size: 32rpx;
+  margin-right: 8rpx;
+}
+
+.icon-refresh:before {
+  content: "\e6aa";
+}
+
+.icon-save:before {
+  content: "\e6ab";
+}
+
+.btn-save.active {
+  background: #ff9999;
+  color: white;
+  border: none;
+}
+
+.btn-reset.active {
+  background: #ffffff;
+  color: #ff9999;
+  border: 2rpx solid #ff9999;
+}
+
+.btn-save.disabled, .btn-reset.disabled {
+  background: #ffffff;
+  color: #999999;
+  border: 2rpx solid #ffcccc;
+}
+
+/* 输入框激活状态 */
+input:focus {
+  border-color: #ff9999;
+  box-shadow: 0 0 4rpx rgba(255, 153, 153, 0.3);
+} 

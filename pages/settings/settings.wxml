@@ -1,0 +1,76 @@
+<!--pages/settings/settings.wxml-->
+<view class="settings-container">
+
+  <!-- 经期设置 -->
+  <view class="settings-card pink">
+    <text class="card-title">输入月经周期</text>
+    <view class="cycle-settings">
+      <view class="cycle-item">
+        <text class="label">周期</text>
+        <input type="number" value="{{cycleDays}}" bindinput="setCycleDays"/>
+        <text class="unit">天</text>
+      </view>
+      <view class="cycle-item">
+        <radio-group bindchange="setCycleType">
+          <label class="radio-label">
+            <radio value="auto" checked="{{cycleType === 'auto'}}"/>
+            <text>自动</text>
+          </label>
+          <label class="radio-label">
+            <radio value="manual" checked="{{cycleType === 'manual'}}"/>
+            <text>手动</text>
+          </label>
+        </radio-group>
+        <text class="default-days">28天</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 经期天数 -->
+  <view class="settings-card pink-light">
+    <text class="section-title">月经期</text>
+    <view class="period-days">
+      <input type="number" value="{{periodDays}}" bindinput="setPeriodDays"/>
+      <text class="unit">天</text>
+    </view>
+  </view>
+
+  <!-- 排卵日预测 -->
+  <view class="settings-card purple">
+    <text class="section-title">排卵日</text>
+    <text class="prediction">月经13天前</text>
+  </view>
+
+  <!-- 密码设置 -->
+  <view class="settings-card">
+    <text class="section-title">密码</text>
+    <view class="password-display" bindtap="focusPassword">
+      <view class="password-mask {{index < password.length ? 'filled' : ''}}" 
+            wx:for="{{[0,1,2,3,4,5]}}" 
+            wx:key="index">_</view>
+    </view>
+    <input type="number" 
+           value="{{password}}" 
+           bindinput="setPassword" 
+           maxlength="6"
+           class="password-input-hidden"
+           focus="{{passwordFocus}}"
+           confirm-type="done"/>
+  </view>
+
+  <!-- 按钮区域 -->
+  <view class="button-group">
+    <button class="btn-reset {{canReset ? 'active' : 'disabled'}}" 
+            bindtap="resetSettings"
+            disabled="{{!canReset}}">
+      <text class="icon-font icon-refresh"></text>
+      <text>重置</text>
+    </button>
+    <button class="btn-save {{isEdited ? 'active' : 'disabled'}}" 
+            bindtap="saveSettings"
+            disabled="{{!isEdited}}">
+      <text class="icon-font icon-save"></text>
+      <text>保存</text>
+    </button>
+  </view>
+</view>

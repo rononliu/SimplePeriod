@@ -1,0 +1,10 @@
+<view class="lock-container">
+  <view class="password-input">
+    <input type="password" 
+           maxlength="6" 
+           password 
+           bindinput="onPasswordInput"
+           placeholder="请输入6位数字密码"/>
+  </view>
+  <button class="verify-btn" bindtap="verifyPassword">确认</button>
+</view> 

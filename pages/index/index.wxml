@@ -1,0 +1,79 @@
+<view class="calendar-container">
+  <view class="calendar-header">
+    <view class="prev-month" bindtap="prevMonth">〈</view>
+    <view class="current-month">{{year}}年{{month}}月</view>
+    <view class="next-month" bindtap="nextMonth">〉</view>
+  </view>
+  
+  <view class="weekday-header">
+    <view wx:for="{{weekdays}}" wx:key="index" class="weekday-item">{{item}}</view>
+  </view>
+  
+  <view class="calendar-body">
+    <view class="calendar-row" wx:for="{{dates}}" wx:key="index" wx:for-index="rowIndex">
+      <view class="calendar-cell {{item.type}} {{item.isInPeriod ? 'period-duration' : ''}} {{item.isStart ? 'period-start' : ''}} {{item.isEnd ? 'period-end' : ''}} {{item.hasLine ? 'has-line' : ''}} {{item.isDashed ? 'dashed-line' : ''}} {{item.isToday ? 'today' : ''}}"
+            wx:for="{{item}}" 
+            wx:key="date"
+            id="cell-{{rowIndex}}-{{index}}"
+            bindtap="selectDate"
+            data-date="{{item.date}}"
+            data-row="{{rowIndex}}"
+            data-col="{{index}}">
+        <view class="cell-content">
+          <text class="date-number">{{item.day}}</text>
+          <view class="today-mark" wx:if="{{item.isToday}}">Today!</view>
+        </view>
+        <view class="line-left {{item.hasLeftArrow ? 'with-arrow' : ''}}" 
+              wx:if="{{item.lineLeft}}"></view>
+        <view class="line-right {{item.hasRightArrow ? 'with-arrow' : ''}}" 
+              wx:if="{{item.lineRight}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-container">
+    <view class="calendar-tips">
+      <view class="tip-item">
+        <view class="tip-line dashed"></view>
+        <text>预测经期</text>
+      </view>
+      <view class="tip-item">
+        <view class="tip-line solid"></view>
+        <text>实际经期</text>
+      </view>
+    </view>
+  </view>
+  
+  <view class="countdown-bar">
+    <text class="star-icon">★</text>
+    <view class="countdown-text">
+      <text>倒计时</text>
+      <text class="countdown-number">5</text>
+      <text>天</text>
+    </view>
+    <text class="star-icon">★</text>
+  </view>
+
+  <view class="floating-menu {{showMenu ? 'show' : ''}}" 
+        style="left: {{menuPosition.left}}px; top: {{menuPosition.top}}px"
+        wx:if="{{showMenu}}">
+    <view class="menu-item" bindtap="markPeriodStart">
+      <view class="menu-icon icon-start"></view>
+      <text>月经开始</text>
+    </view>
+    <view class="menu-item" bindtap="markPeriodEnd">
+      <view class="menu-icon icon-end"></view>
+      <text>月经结束</text>
+    </view>
+    <view class="menu-item" bindtap="cancelPeriod">
+      <view class="menu-icon icon-cancel"></view>
+      <text>取消标记</text>
+    </view>
+    <view class="menu-item" bindtap="showDetails">
+      <view class="menu-icon icon-details"></view>
+      <text>详细内容</text>
+    </view>
+  </view>
+
+  <view class="mask" wx:if="{{showMenu}}" bindtap="closeMenu"></view>
+</view> 
