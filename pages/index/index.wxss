@@ -26,6 +26,8 @@
   color: white;
   display: flex;
   align-items: center;
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  letter-spacing: 2rpx;
 }
 
 .current-month .unit {
@@ -34,16 +36,30 @@
 }
 
 .prev-month, .next-month {
-  padding: 0 70rpx;
+  padding: 0 50rpx;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 80rpx;
 }
 
+/* 修改箭头容器样式 */
 .arrow-icon {
-  width: 48rpx;
-  height: 48rpx;
+  width: 64rpx;
+  height: 64rpx;
+  background: white;  /* 白色背景 */
+  border-radius: 50%;  /* 圆形边框 */
+  padding: 12rpx;  /* 内边距让图标居中 */
+  box-sizing: border-box;  /* 确保padding不会增加整体尺寸 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 可以添加点击态 */
+.prev-month:active .arrow-icon,
+.next-month:active .arrow-icon {
+  background: rgba(255, 255, 255, 0.8);  /* 点击时背景略微变暗 */
 }
 
 .weekday-header {
@@ -59,6 +75,9 @@
   padding: 10rpx 0;
   font-size: 24rpx;
   color: #666;
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  letter-spacing: 1rpx;
 }
 
 .calendar-body {
@@ -82,6 +101,11 @@
   overflow: visible;
 }
 
+/* 添加点击态样式 */
+.calendar-cell:active {
+  background-color: rgba(255, 153, 153, 0.2);  /* 浅粉色背景 */
+}
+
 .cell-content {
   display: flex;
   flex-direction: column;
@@ -98,6 +122,9 @@
   margin-bottom: 4rpx;
   position: relative;
   z-index: 2;
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  letter-spacing: 1rpx;
 }
 
 .today-mark {
@@ -113,7 +140,9 @@
   font-style: italic;
   box-shadow: 1rpx 1rpx 3rpx rgba(0, 0, 0, 0.2);
   z-index: 3;
-  font-weight: bold;
+  font-weight: 600;
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  letter-spacing: 1rpx;
 }
 
 .period-start, .period-end {
@@ -226,7 +255,6 @@
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
   padding: 12rpx 0;
   z-index: 1000;
-  transform: translateX(-50%);
   min-width: 240rpx;
 }
 
@@ -343,4 +371,7 @@
 .countdown-number {
   color: rgba(215, 88, 51);
   font-size: 32rpx;
+  font-family: -apple-system, "Helvetica Neue", sans-serif;
+  font-weight: 600;
+  letter-spacing: 2rpx;
 } 

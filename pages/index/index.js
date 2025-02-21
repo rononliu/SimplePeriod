@@ -178,14 +178,21 @@ Page({
 
     const query = wx.createSelectorQuery()
     query.select(`#cell-${e.currentTarget.dataset.row}-${e.currentTarget.dataset.col}`).boundingClientRect()
+    query.selectViewport().scrollOffset()
     query.exec((res) => {
       if (res[0]) {
+        const cell = res[0]
+        
+        // 菜单左上角对齐格子左下角
+        const left = cell.left
+        const top = cell.top + cell.height
+        
         this.setData({
           selectedDate: date,
           showMenu: true,
           menuPosition: {
-            left: res[0].left + res[0].width / 2,
-            top: res[0].top + res[0].height
+            left: left,
+            top: top
           }
         })
       }
