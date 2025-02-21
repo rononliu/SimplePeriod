@@ -13,18 +13,24 @@ Page({
       left: 0,
       top: 0
     },
-    selectedDate: null
+    selectedDate: null,
+    countdownContent: '<text style="color: rgba(215, 88, 51);">倒计时<text style="font-size: 40rpx; font-weight: bold; margin: 0 10rpx;">5</text>天</text>',
+    cycleDays: 28,
+    nextPeriodStartDate: null,
+    nextPeriodEndDate: null
   },
 
   onLoad() {
     this.loadSettings()
     this.generateCalendar()
+    this.updateCountdownContent()
   },
 
   loadSettings() {
     const settings = wx.getStorageSync('appSettings') || {}
     this.setData({
-      periodDays: settings.periodDays || 7
+      periodDays: settings.periodDays || 7,
+      cycleDays: settings.cycleDays || 28
     })
   },
 
@@ -46,7 +52,7 @@ Page({
     }
     
     for(let i = 1; i <= daysInMonth; i++) {
-      const currentDate = `${this.data.year}-${this.data.month}-${i}`
+      const currentDate = `${this.data.year}-${String(this.data.month).padStart(2, '0')}-${String(i).padStart(2, '0')}`
       const isToday = this.data.year === currentYear && 
                       this.data.month === currentMonth && 
                       i === currentDay
@@ -60,19 +66,32 @@ Page({
         isInPeriod: this.isDateInPeriod(currentDate),
         lineLeft: false,
         lineRight: false,
-        isDashed: !this.data.periodEndDate && this.data.periodStartDate
+        isDashed: false,
+        hasLine: false
       }
 
+      // 判断是否在经期范围内
       if (this.isDateInPeriod(currentDate)) {
         cellData.lineLeft = true
         cellData.lineRight = true
+        cellData.hasLine = true
         
+        // 开始日期处理
         if (currentDate === this.data.periodStartDate) {
           cellData.hasLeftArrow = true
+          cellData.lineRight = true
         }
-        
-        if (currentDate === (this.data.periodEndDate || this.data.tempEndDate)) {
+
+        // 结束日期处理
+        if (currentDate === this.data.periodEndDate || 
+            (!this.data.periodEndDate && currentDate === this.data.tempEndDate)) {
           cellData.hasRightArrow = true
+          cellData.lineLeft = true
+        }
+
+        // 如果是预测范围（没有实际结束日期），显示虚线
+        if (!this.data.periodEndDate && this.data.tempEndDate) {
+          cellData.isDashed = true
         }
       }
 
@@ -92,19 +111,71 @@ Page({
     }
     
     this.setData({ dates })
+
+    // 检查是否需要将虚线变为实线并预测下一次经期
+    const tempEndDate = this.data.tempEndDate ? new Date(this.data.tempEndDate.replace(/-/g, '/')) : null
+    
+    if (tempEndDate && today > tempEndDate) {
+      // 将当前经期设为实线
+      this.setData({
+        periodEndDate: this.data.tempEndDate,
+        tempEndDate: null
+      })
+    }
   },
 
-  isDateInPeriod(date) {
+  isDateInPeriod(dateStr) {
     if (!this.data.periodStartDate) return false
-    const endDate = this.data.periodEndDate || this.data.tempEndDate
-    return date >= this.data.periodStartDate && date <= endDate
+    
+    const currentDate = new Date(dateStr.replace(/-/g, '/'))
+    const startDate = new Date(this.data.periodStartDate.replace(/-/g, '/'))
+    
+    // 如果只有开始日期和临时结束日期，显示虚线预测范围
+    if (!this.data.periodEndDate && this.data.tempEndDate) {
+      const tempEndDate = new Date(this.data.tempEndDate.replace(/-/g, '/'))
+      return currentDate >= startDate && currentDate <= tempEndDate
+    }
+    
+    // 如果有实际结束日期，显示实线
+    if (this.data.periodEndDate) {
+      const endDate = new Date(this.data.periodEndDate.replace(/-/g, '/'))
+      return currentDate >= startDate && currentDate <= endDate
+    }
+    
+    return false
+  },
+
+  isValidStartDate(dateStr) {
+    const selectedDate = new Date(dateStr.replace(/-/g, '/'))
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)  // 设置时间为当天开始
+    return selectedDate <= today
+  },
+
+  isValidEndDate(dateStr) {
+    if (!this.data.tempEndDate || !this.data.periodStartDate) return false
+    
+    const selectedDate = new Date(dateStr.replace(/-/g, '/'))
+    const startDate = new Date(this.data.periodStartDate.replace(/-/g, '/'))
+    const tempEndDate = new Date(this.data.tempEndDate.replace(/-/g, '/'))
+    
+    // 结束日期不能等于开始日期，且必须在预测范围内
+    return selectedDate > startDate && selectedDate <= tempEndDate
   },
 
   selectDate(e) {
     const date = e.currentTarget.dataset.date
     if (!date) return
 
-    // 使用微信小程序的方式获取元素位置
+    // 验证开始日期
+    if (!this.isValidStartDate(date)) {
+      wx.showToast({
+        title: '不能选择未来日期',
+        icon: 'none'
+      })
+      return
+    }
+
     const query = wx.createSelectorQuery()
     query.select(`#cell-${e.currentTarget.dataset.row}-${e.currentTarget.dataset.col}`).boundingClientRect()
     query.exec((res) => {
@@ -121,10 +192,20 @@ Page({
     })
   },
 
-  calculateEndDate(startDate) {
-    const [year, month, day] = startDate.split('-').map(Number)
-    const endDate = new Date(year, month - 1, day + this.data.periodDays - 1)
-    return `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${endDate.getDate()}`
+  calculateEndDate(startDateStr) {
+    const startDate = new Date(startDateStr.replace(/-/g, '/'))
+    const endDate = new Date(startDate)
+    endDate.setDate(startDate.getDate() + (this.data.periodDays - 1))
+    
+    return this.formatDate(endDate)
+  },
+
+  // 添加一个通用的日期格式化函数
+  formatDate(date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   },
 
   getPeriodType(date) {
@@ -147,18 +228,40 @@ Page({
       periodEndDate: null,
       tempEndDate: endDate,
       showMenu: false
-    }, this.generateCalendar)
+    }, () => {
+      this.generateCalendar()
+      this.updateCountdownContent()
+    })
   },
 
   markPeriodEnd() {
     const date = this.data.selectedDate
-    if (!date || !this.data.periodStartDate) return
+    if (!date) return
 
-    // 确保结束日期不早于开始日期
-    if (date < this.data.periodStartDate) {
+    // 如果没有开始日期，提示用户先选择开始日期
+    if (!this.data.periodStartDate) {
       wx.showToast({
-        title: '结束日期不能早于开始日期',
+        title: '请先选择开始日期',
         icon: 'none'
+      })
+      this.setData({
+        showMenu: false
+      })
+      return
+    }
+
+    const selectedDate = new Date(date.replace(/-/g, '/'))
+    const startDate = new Date(this.data.periodStartDate.replace(/-/g, '/'))
+    const tempEndDate = new Date(this.data.tempEndDate.replace(/-/g, '/'))
+    
+    // 结束日期不能等于开始日期，且必须在预测范围内
+    if (selectedDate <= startDate || selectedDate > tempEndDate) {
+      wx.showToast({
+        title: '请在预测范围内选择结束日期',
+        icon: 'none'
+      })
+      this.setData({
+        showMenu: false
       })
       return
     }
@@ -167,7 +270,10 @@ Page({
       periodEndDate: date,
       tempEndDate: null,
       showMenu: false
-    }, this.generateCalendar)
+    }, () => {
+      this.generateCalendar()
+      this.updateCountdownContent()
+    })
   },
 
   cancelPeriod() {
@@ -175,6 +281,8 @@ Page({
       periodStartDate: null,
       periodEndDate: null,
       tempEndDate: null,
+      nextPeriodStartDate: null,
+      nextPeriodEndDate: null,
       showMenu: false
     }, this.generateCalendar)
   },
@@ -202,7 +310,9 @@ Page({
     } else {
       month--
     }
-    this.setData({ year, month }, this.generateCalendar)
+    this.setData({ year, month }, () => {
+      this.generateCalendar()
+    })
   },
 
   nextMonth() {
@@ -213,7 +323,9 @@ Page({
     } else {
       month++
     }
-    this.setData({ year, month }, this.generateCalendar)
+    this.setData({ year, month }, () => {
+      this.generateCalendar()
+    })
   },
 
   onShow() {
@@ -223,5 +335,63 @@ Page({
         url: '/pages/lock/lock'
       })
     }
+
+    // 每分钟更新一次显示
+    this.updateTimer = setInterval(() => {
+      this.updateCountdownContent()
+      this.generateCalendar()  // 检查是否需要更新经期状态
+    }, 60000)
+  },
+
+  onHide() {
+    if (this.updateTimer) {
+      clearInterval(this.updateTimer)
+    }
+  },
+
+  updateCountdownContent() {
+    if (!this.data.periodStartDate) {
+      this.setData({
+        countdownContent: '请选择月经开始日期'
+      })
+      return
+    }
+
+    const today = new Date()
+    const startDate = new Date(this.data.periodStartDate.replace(/-/g, '/'))
+    const endDate = this.data.periodEndDate ? 
+                   new Date(this.data.periodEndDate.replace(/-/g, '/')) :
+                   this.data.tempEndDate ? 
+                   new Date(this.data.tempEndDate.replace(/-/g, '/')) : null
+
+    // 如果当前日期小于开始日期，显示倒计时
+    if (today < startDate) {
+      const diffDays = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24))
+      this.setData({
+        countdownContent: `倒计时 ${diffDays} 天`
+      })
+    } 
+    // 如果当前日期在经期范围内，显示经期第几天
+    else if (endDate && today <= endDate) {
+      const dayCount = Math.ceil((today - startDate) / (1000 * 60 * 60 * 24)) + 1
+      this.setData({
+        countdownContent: `经期第 ${dayCount} 天`
+      })
+    }
+    // 添加这个分支：显示距离下一次经期的倒计时
+    else if (this.data.nextPeriodStartDate) {
+      const nextStart = new Date(this.data.nextPeriodStartDate.replace(/-/g, '/'))
+      const diffDays = Math.ceil((nextStart - today) / (1000 * 60 * 60 * 24))
+      this.setData({
+        countdownContent: `距离下次经期还有 ${diffDays} 天`
+      })
+    }
+  },
+
+  isDateInRange(dateStr, startStr, endStr) {
+    const date = new Date(dateStr.replace(/-/g, '/'))
+    const start = new Date(startStr.replace(/-/g, '/'))
+    const end = new Date(endStr.replace(/-/g, '/'))
+    return date >= start && date <= end
   }
 }) 

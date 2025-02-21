@@ -1,8 +1,8 @@
 Page({
     data: {
-        cycleDays: 27,
+        cycleDays: 28,
         cycleType: 'auto',
-        periodDays: 3,
+        periodDays: 7,
         password: '',
         passwordFocus: false,
         isEdited: false,
@@ -18,7 +18,7 @@ Page({
     loadSettings() {
         const settings = wx.getStorageSync('appSettings') || {}
         const data = {
-            cycleDays: settings.cycleDays || 27,
+            cycleDays: settings.cycleDays || 28,
             cycleType: settings.cycleType || 'auto',
             periodDays: settings.periodDays || 7,
             password: settings.password || ''

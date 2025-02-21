@@ -2,10 +2,15 @@
   padding: 0;
   position: relative;
   background: #fff5f5;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;  /* 移除底部padding */
 }
 
 .calendar-header {
+  flex-shrink: 0;  /* 防止头部压缩 */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -15,27 +20,34 @@
   position: relative;
 }
 
-.calendar-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 20rpx;
-  background: linear-gradient(to bottom right, transparent 50%, #ffeb3b 50%);
+.current-month {
+  font-size: 40rpx;
+  font-weight: 500;
+  color: white;
+  display: flex;
+  align-items: center;
 }
 
-.current-month {
-  font-size: 32rpx;
-  font-weight: 500;
+.current-month .unit {
+  color: #9b5d55;
+  margin: 0 8rpx;
 }
 
 .prev-month, .next-month {
-  padding: 0 30rpx;
-  font-size: 36rpx;
+  padding: 0 70rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+}
+
+.arrow-icon {
+  width: 48rpx;
+  height: 48rpx;
 }
 
 .weekday-header {
+  flex-shrink: 0;  /* 防止周标题压缩 */
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   background: #fff8e1;
@@ -50,9 +62,11 @@
 }
 
 .calendar-body {
+  flex: 1;  /* 让日历主体自适应剩余空间 */
   background: white;
   border: 2rpx solid #ffe0e0;
   border-top: none;
+  overflow-y: auto;
 }
 
 .calendar-row {
@@ -207,106 +221,35 @@
 
 .floating-menu {
   position: fixed;
-  background: white;
-  border: 2rpx solid #ffcccc;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 20rpx rgba(255, 153, 153, 0.2);
-  padding: 10rpx;
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+  padding: 12rpx 0;
   z-index: 1000;
   transform: translateX(-50%);
-  min-width: 300rpx;
+  min-width: 240rpx;
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 20rpx 30rpx;
-  border-bottom: 1rpx solid #ffe6e6;
+  padding: 20rpx 32rpx;
+  transition: all 0.2s;
 }
 
-.menu-item:last-child {
-  border-bottom: none;
+.menu-item:active {
+  background: rgba(255, 153, 153, 0.1);
 }
 
 .menu-icon {
   width: 40rpx;
   height: 40rpx;
-  margin-right: 20rpx;
-  position: relative;
-  background: #ff9999;
+  margin-right: 24rpx;
 }
 
-.icon-start {
-  background: #ff9999;
-  border-radius: 50%;
-}
-
-.icon-start::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 16rpx;
-  height: 16rpx;
-  border-left: 4rpx solid #fff;
-  border-bottom: 4rpx solid #fff;
-  transform: translate(-25%, -50%) rotate(45deg);
-}
-
-.icon-end {
-  background: #ff6666;
-  border-radius: 50%;
-}
-
-.icon-end::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 16rpx;
-  height: 16rpx;
-  border-right: 4rpx solid #fff;
-  border-top: 4rpx solid #fff;
-  transform: translate(-75%, -50%) rotate(45deg);
-}
-
-.icon-cancel {
-  border: 2rpx solid #ff9999;
-  border-radius: 50%;
-}
-
-.icon-cancel::before,
-.icon-cancel::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 24rpx;
-  height: 4rpx;
-  background: #ff9999;
-}
-
-.icon-cancel::before {
-  transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.icon-cancel::after {
-  transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.icon-details {
-  border: 2rpx solid #ff9999;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-details::after {
-  content: '?';
-  color: #ff9999;
-  font-size: 24rpx;
-  font-weight: bold;
+.menu-text {
+  font-size: 28rpx;
+  color: #666666;
 }
 
 .mask {
@@ -324,13 +267,10 @@
   font-size: 28rpx;
 }
 
-.menu-item:active {
-  background: #fff5f5;
-}
-
 .bottom-container {
+  flex-shrink: 0;  /* 防止底部压缩 */
   padding: 20rpx;
-  margin-top: 20rpx;
+  margin-top: 0;  /* 移除顶部margin */
 }
 
 .calendar-tips {
@@ -376,31 +316,31 @@
 }
 
 .countdown-bar {
+  flex-shrink: 0;  /* 防止底部压缩 */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16rpx;
-  background: rgba(197, 231, 255);
-  border-top: 2px solid rgba(70, 57, 46);
-  border-bottom: 2px solid rgba(70, 57, 46);
+  padding: 20rpx 30rpx;
+  box-sizing: border-box;
+  width: 100%;
+  background: #e6f7ff;  /* 添加蓝色背景 */
+  border-top: 2rpx solid #91d5ff;  /* 添加上边框 */
+  border-bottom: 2rpx solid #91d5ff;  /* 添加下边框 */
+}
+
+.star-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin: 0 16rpx;
 }
 
 .countdown-text {
-  color: rgba(215, 88, 51);
-  font-size: 32rpx;
   margin: 0 20rpx;
   display: flex;
   align-items: center;
 }
 
 .countdown-number {
-  font-size: 40rpx;
-  font-weight: bold;
-  margin-left: 10rpx;
-  margin-right: 10rpx;
-}
-
-.star-icon {
-  color: #ffcc66;
-  font-size: 24rpx;
+  color: rgba(215, 88, 51);
+  font-size: 32rpx;
 } 
